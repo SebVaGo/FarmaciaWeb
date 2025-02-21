@@ -32,7 +32,6 @@ const corsOptions = {
 const corsMiddleware = cors(corsOptions);
 
 const corsWithLogging = (req, res, next) => {
-    //console.log(`CORS Request from origin: ${req.header('Origin')}`);
     corsMiddleware(req, res, next);
 };
 
