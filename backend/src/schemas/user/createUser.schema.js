@@ -1,7 +1,7 @@
 const joi = require('joi');
 
 const createUserSchema = joi.object({
-    username: joi.string().min(3).max(50).required(),
+    username: joi.string().min(3).max(50).required().regex(/^[a-zA-Z0-9\s]+$/),
     email: joi.string().email().required(),
     password: joi.string()
     .min(8)

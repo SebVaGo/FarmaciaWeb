@@ -1,9 +1,8 @@
 const Role = require('../../models/Role.js');
 const logger = require('../../configurations/logger.js');
 
-const create = async (role) => {
+const createRol = async (role) => {
     try{
-        console.log('Datos en el servicio:', role);
         const newRole = await Role.create(role);
         return newRole;
     }
@@ -13,4 +12,4 @@ const create = async (role) => {
     }
 }
 
-module.exports = { create }; 
+module.exports = { createRol }; 
