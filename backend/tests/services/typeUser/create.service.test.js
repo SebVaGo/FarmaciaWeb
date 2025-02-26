@@ -63,9 +63,9 @@ describe('createRol', () => {
         const dbError = new Error('Error en la base de datos');
         Role.findOrCreate.mockRejectedValue(dbError);
         
-        const serverError = new CustomError('Error en la base de datos', 500, 'ROLE_CREATION_ERROR');
+        const serverError = new CustomError('Error al crear el rol', 500, 'ROLE_CREATION_ERROR'); // <-- Mensaje cambiado
         errorHelper.internalServerError.mockReturnValue(serverError);
-
+    
         const roleData = { nombre: 'Admin', descripcion: 'Rol administrador' };
         
         try {
@@ -73,10 +73,10 @@ describe('createRol', () => {
             fail('createRol debería haber lanzado un error');
         } catch (error) {
             expect(error).toBeInstanceOf(CustomError);
-            expect(error.message).toBe('Error en la base de datos');
+            expect(error.message).toBe('Error al crear el rol'); 
             expect(error.httpStatus).toBe(500);
             expect(errorHelper.internalServerError).toHaveBeenCalledWith(
-                'Error en la base de datos',
+                'Error al crear el rol', 
                 'ROLE_CREATION_ERROR'
             );
         }

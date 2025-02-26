@@ -17,11 +17,11 @@ const createRol = async (role) => {
 
         return newRole;
     } catch (error) {
-        logger.error(`Error en createRole: ${error.message}`);
-        if (error instanceof CustomError) {
-            throw error;
+        if (!(error instanceof CustomError)) {
+            logger.error(`Error en createRole: ${error.message}`);
+            throw internalServerError('Error al crear el rol', 'ROLE_CREATION_ERROR');
         }
-        throw internalServerError(error.message, 'ROLE_CREATION_ERROR');
+        throw error;
     }
 };
 

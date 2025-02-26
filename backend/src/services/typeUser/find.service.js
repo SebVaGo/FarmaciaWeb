@@ -23,8 +23,7 @@ const findAll = async () => {
     }
 }
 const findOne = async (id) => {
-    try{
-
+    try {
         if (!id) {
             throw notFoundError('ID de rol no proporcionado');
         }
@@ -37,14 +36,13 @@ const findOne = async (id) => {
         }
 
         return role;
-
-    }
-    catch (error){
-        logger.error(`Error en findOneRole: ${error.message}`);
-        if (error instanceof CustomError) {
-            throw error;
+    } catch (error) {
+        if (!(error instanceof CustomError)) {
+            logger.error(`Error en findOneRole: ${error.message}`);
+            throw internalServerError('No se pudo obtener el rol', 'FIND_ONE_ROLE_ERROR');
         }
-        throw internalServerError('No se pudo obtener el rol', 'FIND_ONE_ROLE_ERROR');}
-}
+        throw error;
+    }
+};
 
 module.exports = { findAll, findOne}; 

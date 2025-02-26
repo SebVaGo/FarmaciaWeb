@@ -27,11 +27,12 @@ const alterRole = async (roleId, roleData) => {
             },
         };
     } catch (error) {
-        logger.error(`Error en alterRole: ${error.message}`);
-        if (error instanceof CustomError) {
-            throw error;
+
+        if (!(error instanceof CustomError)) {
+            logger.error(`Error en alterRole: ${error.message}`);
+            throw internalServerError('Error al actualizar el rol', 'ROLE_UPDATE_ERROR');
         }
-        throw internalServerError(error.message, 'ROLE_UPDATE_ERROR');
+        throw error;
     }
 };
 

@@ -15,12 +15,11 @@ const deleteRole = async (roleId) => {
 
         return { message: 'Rol eliminado correctamente' };
     } catch (error) {
-        if (error instanceof CustomError) {
-            throw error;
+        if (!(error instanceof CustomError)) {
+            logger.error(`Error en deleteRole: ${error.message}`);
+            throw internalServerError('Error al intentar eliminar el rol', 'DELETE_ROLE_ERROR');
         }
-        
-        logger.error(`Error en deleteRole: ${error.message}`);
-        throw new CustomError('Error al intentar eliminar el rol', 500, 'DELETE_ROLE_ERROR');
+        throw error;
     }
 };
 
