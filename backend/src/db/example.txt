@@ -1,0 +1,206 @@
+Table Usuario {
+    id INT [pk, increment]
+    id_tipo_documento INT [ref: > TipoDocumento.id]
+    numero_documento VARCHAR(20) [not null]
+    nombres VARCHAR(100) [not null]
+    apellidos VARCHAR(100) [not null]
+    id_genero INT
+    correo_electronico VARCHAR(100) [unique, not null]
+    celular VARCHAR(20)
+    direccion TEXT
+    fecha_nacimiento DATE
+    activo BOOLEAN [default: true]
+    estado BOOLEAN [default: true]
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+    fecha_actualizacion DATETIME
+    fecha_anulacion DATETIME
+}
+
+Table UsuarioId {
+    id INT [pk, increment]
+    id_usuario INT [ref: > Usuario.id]
+    usuario_guid VARCHAR(36) [unique, not null]
+    estado BOOLEAN [default: true]
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+    fecha_actualizacion DATETIME
+    fecha_anulacion DATETIME
+}
+
+Table UsuarioContrasena {
+    id INT [pk, increment]
+    id_usuario INT [ref: > Usuario.id]
+    clave_hash VARCHAR(255) [not null]
+    salt VARCHAR(100) [not null]
+    estado BOOLEAN [default: true]
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+    fecha_actualizacion DATETIME
+    fecha_anulacion DATETIME
+}
+
+Table UsuarioRestablecerContrasena {
+    id INT [pk, increment]
+    id_usuario INT [ref: > Usuario.id]
+    token VARCHAR(100) [unique]
+    expiracion DATETIME
+    usado BOOLEAN [default: false]
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+}
+
+Table TipoDocumento {
+    id INT [pk, increment]
+    codigo VARCHAR(20) [unique]
+    descripcion VARCHAR(100)
+    orden INT
+    activo BOOLEAN [default: true]
+    estado BOOLEAN [default: true]
+    motivo_anulacion TEXT
+}
+
+// MÓDULO DE CONTROL DE ACCESO
+Table Rol {
+    id INT [pk, increment]
+    nombre VARCHAR(50) [unique, not null]
+    descripcion TEXT
+    activo BOOLEAN [default: true]
+}
+
+Table Menu {
+    id INT [pk, increment]
+    nombre VARCHAR(100)
+    icono VARCHAR(50)
+    url VARCHAR(100)
+    orden INT
+    id_menu_padre INT [ref: > Menu.id]
+    activo BOOLEAN [default: true]
+}
+
+Table MenuRol {
+    id INT [pk, increment]
+    id_menu INT [ref: > Menu.id]
+    id_rol INT [ref: > Rol.id]
+    activo BOOLEAN [default: true]
+}
+
+// MÓDULO DE NEGOCIO
+Table Negocio {
+    id INT [pk, increment]
+    nombre VARCHAR(100) [not null]
+    ruc VARCHAR(20)
+    direccion TEXT
+    logo_url VARCHAR(255)
+    correo_contacto VARCHAR(100)
+    telefono VARCHAR(20)
+    activo BOOLEAN [default: true]
+}
+
+Table Moneda {
+    id INT [pk, increment]
+    codigo VARCHAR(10) [unique]
+    descripcion VARCHAR(50)
+    simbolo VARCHAR(5)
+    activo BOOLEAN [default: true]
+}
+
+// MÓDULO DE PRODUCTOS
+Table Categoria {
+    id INT [pk, increment]
+    nombre VARCHAR(100) [not null]
+    descripcion TEXT
+    activo BOOLEAN [default: true]
+}
+
+Table Medida {
+    id INT [pk, increment]
+    codigo VARCHAR(10) [unique]
+    descripcion VARCHAR(50)
+    activo BOOLEAN [default: true]
+}
+
+Table Producto {
+    id INT [pk, increment]
+    codigo VARCHAR(50) [unique]
+    nombre VARCHAR(100) [not null]
+    descripcion TEXT
+    id_categoria INT [ref: > Categoria.id]
+    id_medida INT [ref: > Medida.id]
+    stock INT [default: 0]
+    stock_minimo INT [default: 0]
+    precio_compra DECIMAL(10,2)
+    precio_venta DECIMAL(10,2)
+    fecha_vencimiento DATE
+    requiere_receta BOOLEAN [default: false]
+    activo BOOLEAN [default: true]
+}
+
+// MÓDULO DE VENTAS
+Table VentaNumeroCorrelativo {
+    id INT [pk, increment]
+    ultimo_numero INT
+    fecha_actualizacion DATETIME
+}
+
+Table Venta {
+    id INT [pk, increment]
+    numero_venta VARCHAR(20) [unique]
+    id_usuario INT [ref: > Usuario.id]
+    id_cliente INT [ref: > Usuario.id]
+    id_moneda INT [ref: > Moneda.id]
+    subtotal DECIMAL(10,2)
+    impuesto DECIMAL(10,2)
+    total DECIMAL(10,2)
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+    estado ENUM('pendiente', 'completada', 'anulada')
+}
+
+Table DetalleVenta {
+    id INT [pk, increment]
+    id_venta INT [ref: > Venta.id]
+    id_producto INT [ref: > Producto.id]
+    cantidad INT
+    precio_unitario DECIMAL(10,2)
+    subtotal DECIMAL(10,2)
+    id_receta INT [null] // Para productos que requieren receta
+}
+
+// TABLAS ADICIONALES RECOMENDADAS PARA FARMACIA
+Table Receta {
+    id INT [pk, increment]
+    id_venta INT [ref: > Venta.id]
+    id_medico INT // Referencia a tabla Medicos si se implementa
+    imagen_url VARCHAR(255)
+    observaciones TEXT
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+}
+
+Table Lote {
+    id INT [pk, increment]
+    id_producto INT [ref: > Producto.id]
+    numero_lote VARCHAR(50)
+    fecha_fabricacion DATE
+    fecha_vencimiento DATE
+    cantidad INT
+    activo BOOLEAN [default: true]
+}
+
+Table MovimientoStock {
+    id INT [pk, increment]
+    id_producto INT [ref: > Producto.id]
+    id_lote INT [ref: > Lote.id]
+    tipo_movimiento ENUM('entrada', 'salida')
+    cantidad INT
+    motivo VARCHAR(100)
+    fecha_registro DATETIME [default: `CURRENT_TIMESTAMP`]
+    id_usuario INT [ref: > Usuario.id]
+}
+
+// Índices recomendados
+Indexes {
+    (Usuario, correo_electronico) [unique]
+    (Producto, codigo) [unique]
+    (Venta, numero_venta) [unique]
+    (UsuarioId, usuario_guid) [unique]
+    (Producto, id_categoria, activo)
+    (Venta, fecha_registro)
+    (DetalleVenta, id_venta)
+    (Lote, fecha_vencimiento)
+}

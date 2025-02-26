@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db');
-const User = require('./User');
+const User = require('./Usuario');
 
 const LoginRecord = sequelize.define('LoginRecord', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },

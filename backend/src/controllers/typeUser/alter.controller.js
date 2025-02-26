@@ -1,23 +1,23 @@
 const updateRoleSchema = require('../../schemas/typeUser/alter.schema.js');
 const validate = require('../../helpers/validate.helper.js');
-const {alterRole} = require("../../services/typeUser/index.service.js");
+const { alterRole } = require('../../services/typeUser/index.service.js');
 
 const alter = async (req, res, next) => {
     try {
-        //Se valida el esquema
+        // Validar el esquema
         await validate.main(updateRoleSchema, req.body);
 
-        //Se prepara respuesta
+        // Extraer los datos
         const { roleId, role } = req.body;
+
+        // Ejecutar la actualización
         const response = await alterRole(roleId, role);
 
-        //Se envía respuesta
+        // Responder con éxito
         res.status(200).json(response);
-    }
-    catch (error) {
+    } catch (error) {
         next(error);
     }
-}
+};
 
 module.exports = { alter };
-

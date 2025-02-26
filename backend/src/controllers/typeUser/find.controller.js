@@ -7,10 +7,7 @@ const getAllRoles = async (req, res, next) => {
     try {
         // Obtiene todos los roles
         const roles = await findAll();
-        
-        if (!roles || roles.length === 0) {
-            return res.status(404).json({ message: "No se encontraron roles" });
-        }
+
 
         res.status(200).json(roles);
     } catch (error) {
@@ -26,10 +23,6 @@ const getRoleById = async (req, res, next) => {
 
         // Buscamos el rol por ID
         const role = await findOne(req.params.roleId);
-
-        if (!role) {
-            return res.status(404).json({ message: "Rol no encontrado" });
-        }
 
         res.status(200).json(role);
     } catch (error) {

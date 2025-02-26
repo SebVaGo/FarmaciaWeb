@@ -11,10 +11,7 @@ const deleteTypeUser = async (req, res, next) => {
         // Eliminamos el rol
         const response = await deleteType.deleteRole(req.params.roleId);
 
-        if (!response) {
-            return res.status(404).json({ message: "Rol no encontrado" });
-        }
-
+        //Respondemos
         res.status(200).json(response);
     } catch (error) {
         logger.error(`Error en deleteTypeUser: ${error.message}`);
