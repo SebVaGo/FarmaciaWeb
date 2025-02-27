@@ -5,8 +5,7 @@ const main = async (schema, data) => {
     try {
         await schema.validateAsync(data, { abortEarly: false }); // Permitir múltiples errores
     } catch (error) {
-        const errorMsg = error.details?.[0]?.message || error.message || 'Error de validación';
-        
+        const errorMsg = error.details?.[0]?.message || error.message || 'Error de validación';  
         logger.warn(`Validación fallida: ${errorMsg}`); // Cambiado de error a warn
         throw errorHelper.badRequestError(errorMsg);
     }

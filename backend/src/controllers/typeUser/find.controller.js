@@ -8,7 +8,6 @@ const getAllRoles = async (req, res, next) => {
         // Obtiene todos los roles
         const roles = await findAll();
 
-
         res.status(200).json(roles);
     } catch (error) {
         logger.error(`Error en getAllRoles: ${error.message}`);

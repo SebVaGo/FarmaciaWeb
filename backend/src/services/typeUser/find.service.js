@@ -27,14 +27,11 @@ const findOne = async (id) => {
         if (!id) {
             throw notFoundError('ID de rol no proporcionado');
         }
-
         const role = await Role.findByPk(id);
-
         if (!role) {
             logger.warn(`Rol con id ${id} no encontrado`);
             throw notFoundError(`Rol con id ${id} no encontrado`, 'ROLE_NOT_FOUND');
         }
-
         return role;
     } catch (error) {
         if (!(error instanceof CustomError)) {

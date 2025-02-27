@@ -4,15 +4,21 @@ const Rol = require('./Rol');
 
 const Usuario = sequelize.define('Usuario', {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    numero_documento: { type: DataTypes.STRING(20), allowNull: false, unique: true },
-    nombres: { type: DataTypes.STRING(100), allowNull: false },
-    apellidos: { type: DataTypes.STRING(100), allowNull: false },
+    numero_documento: { type: DataTypes.STRING(9), allowNull: false, unique: true },
+    primer_nombre: { type: DataTypes.STRING(50), allowNull: false },
+    segundo_nombre: { type: DataTypes.STRING(50), allowNull: true },
+    apellido_paterno: { type: DataTypes.STRING(50), allowNull: false },
+    apellido_materno: { type: DataTypes.STRING(50), allowNull: false },
     correo_electronico: { type: DataTypes.STRING(100), allowNull: false, unique: true },
     celular: { type: DataTypes.STRING(20) },
     direccion: { type: DataTypes.TEXT },
-    fecha_nacimiento: { type: DataTypes.DATE },
-    activo: { type: DataTypes.BOOLEAN, defaultValue: true },
-    estado: { type: DataTypes.BOOLEAN, defaultValue: true },
+    fecha_nacimiento: { type: DataTypes.DATE, allowNull: true,
+        get() {
+          const rawValue = this.getDataValue('fecha_nacimiento');
+          return rawValue ? rawValue.toISOString().split('T')[0] : null; // Devuelve solo YYYY-MM-DD
+        } },
+    is_logged_in: { type: DataTypes.BOOLEAN, defaultValue: false },
+    is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     id_rol: { type: DataTypes.INTEGER, allowNull: true },
     fecha_registro: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     fecha_actualizacion: { type: DataTypes.DATE },
@@ -23,3 +29,5 @@ const Usuario = sequelize.define('Usuario', {
 Usuario.belongsTo(Rol, { foreignKey: 'id_rol', onDelete: 'SET NULL' });
 
 module.exports = Usuario;
+
+
