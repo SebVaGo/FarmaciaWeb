@@ -23,6 +23,7 @@ const guidToId = async (req, res, next) => {
         next(internalServerError('Error al convertir GUID a ID', 'GUID_TO_ID_ERROR'));
     }
 }
+
 module.exports = { guidToId };
 
 

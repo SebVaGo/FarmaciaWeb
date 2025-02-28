@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db');
 const Rol = require('./Rol');
+const UsuarioId = require('./UsuarioId');
 
 const Usuario = sequelize.define('Usuario', {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -26,7 +27,6 @@ const Usuario = sequelize.define('Usuario', {
 }, { tableName: 'Usuario', timestamps: false });
 
 // Relaciones
-Usuario.belongsTo(Rol, { foreignKey: 'id_rol', onDelete: 'SET NULL' });
 
 module.exports = Usuario;
 

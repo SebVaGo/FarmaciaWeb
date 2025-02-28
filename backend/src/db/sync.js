@@ -1,11 +1,14 @@
 const { sequelize, connectDB } = require('./index');
 const logger = require('../configurations/logger');
-const Role = require('../models/Role');
-const User = require('../models/User');
-const LoginRecord = require('../models/LoginRecord');
+
+
+const setupAssociations = require('../models/asociaciones.js');
 
 const syncDatabase = async () => {
+
   await connectDB();
+
+  setupAssociations();
 
   try {
     await sequelize.sync({ alter: true }); // Actualizar la tabla sin borrar datos

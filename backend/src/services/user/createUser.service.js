@@ -66,7 +66,7 @@ const createUser = async (userData) => {
             usuario_guid: usuarioGuid.usuario_guid,
             dni: createdUser.numero_documento,
             primer_nombre: createdUser.primer_nombre,
-            apellido_pat: createdUser.apellido_paterno,
+            apellido_paterno: createdUser.apellido_paterno,
             correo: createdUser.correo_electronico,
             direccion: createdUser.direccion,
             fecha_nacimiento: createdUser.fecha_nacimiento,

@@ -13,6 +13,5 @@ const UsuarioId = sequelize.define('UsuarioId', {
 }, { tableName: 'UsuarioId', timestamps: false });
 
 // Relaciones
-UsuarioId.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
 
 module.exports = UsuarioId;
