@@ -10,19 +10,19 @@ const guidToId = async (req, res, next) => {
             return next(badRequestError('GUID del usuario es requerido', 'USER_GUID_REQUIRED'));
         }
         
-        const userMapping = await UsuarioID.findByPk(usuario_guid);
-        
-        if (!userMapping) {
+        const userMapping = await UsuarioID.findOne({ where: { usuario_guid }, attributes: ['id_usuario'] });
+
+        if (!userMapping) {  // Verifica que userMapping no sea null
             return next(notFoundError('Usuario no encontrado', 'USER_NOT_FOUND'));
         }
-
+        
         req.userId = userMapping.id_usuario;
         next();
     }
     catch (error) {
         next(internalServerError('Error al convertir GUID a ID', 'GUID_TO_ID_ERROR'));
     }
-}
+};
 
 module.exports = { guidToId };
 

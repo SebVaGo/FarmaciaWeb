@@ -16,6 +16,7 @@ const getAllRoles = async (req, res, next) => {
 };
 
 const getRoleById = async (req, res, next) => {
+
     try {
         // Validamos el ID recibido
         await validate.main(findTypeUserSchema, req.params);

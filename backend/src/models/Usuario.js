@@ -14,10 +14,20 @@ const Usuario = sequelize.define('Usuario', {
     celular: { type: DataTypes.STRING(20) },
     direccion: { type: DataTypes.TEXT },
     fecha_nacimiento: { type: DataTypes.DATE, allowNull: true,
-        get() {
-          const rawValue = this.getDataValue('fecha_nacimiento');
-          return rawValue ? rawValue.toISOString().split('T')[0] : null; // Devuelve solo YYYY-MM-DD
-        } },
+      get() {
+        const rawValue = this.getDataValue('fecha_nacimiento');
+
+        if (!rawValue) return null; // Si es null, devolver null directamente
+        
+        const dateObject = new Date(rawValue); // Asegurar que sea un objeto Date
+        
+        if (isNaN(dateObject)) {
+            console.error("Error: fecha_nacimiento no es una fecha válida:", rawValue);
+            return null;
+        }
+
+        return dateObject.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    }   },
     is_logged_in: { type: DataTypes.BOOLEAN, defaultValue: false },
     is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     id_rol: { type: DataTypes.INTEGER, allowNull: true },

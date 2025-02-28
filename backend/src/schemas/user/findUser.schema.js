@@ -8,4 +8,6 @@ const getUserSchema = Joi.object({
     })
 });
 
-module.exports = { getUserSchema };
+module.exports =  getUserSchema ;
+
+
