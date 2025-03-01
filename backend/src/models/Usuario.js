@@ -17,9 +17,9 @@ const Usuario = sequelize.define('Usuario', {
       get() {
         const rawValue = this.getDataValue('fecha_nacimiento');
 
-        if (!rawValue) return null; // Si es null, devolver null directamente
+        if (!rawValue) return null; 
         
-        const dateObject = new Date(rawValue); // Asegurar que sea un objeto Date
+        const dateObject = new Date(rawValue); 
         
         if (isNaN(dateObject)) {
             console.error("Error: fecha_nacimiento no es una fecha válida:", rawValue);

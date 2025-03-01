@@ -7,6 +7,8 @@ const CustomError = require('../../helpers/customError.helper.js');
 
 const findOne = async (id) => {
 
+    console.log(id);
+
     try {
         const user = await Usuario.findOne({
             where: { id },

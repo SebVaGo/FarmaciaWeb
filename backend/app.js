@@ -20,13 +20,10 @@ const PORT = 3000;
 
 async function startServer() {
     try {
-      // Primero conectamos a la base de datos
       await connectDB();
       
-      // Luego configuramos las asociaciones
       setupAssociations();
       
-      // Configuración de Express
       app.use(helmet());
       app.use(express.json()); 
       app.use(express.urlencoded({ extended: true }));
@@ -35,7 +32,6 @@ async function startServer() {
       app.use(router);
       app.use(errorController);
       
-      // Iniciamos el servidor
       app.listen(PORT, () => {
         console.log(`Servidor escuchando en http://localhost:${PORT}`);
       });

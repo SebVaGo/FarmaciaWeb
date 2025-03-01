@@ -1,29 +1,23 @@
-const UsuarioID = require('../models/UsuarioId.js');
 const logger = require('../configurations/logger.js');
-const CustomError = require('../helpers/customError.helper.js');
+const validate = require('../helpers/validate.helper');
+const getUserSchema = require('../schemas/user/findUser.schema.js');
+const { findIdByGuid } = require('../services/middleware/guidToId.service.js');
 
 const guidToId = async (req, res, next) => {
     try {
         const usuario_guid = req.body.usuario_guid || req.params.usuario_guid || req.query.usuario_guid;
-        
-        if (!usuario_guid) {
-            return next(badRequestError('GUID del usuario es requerido', 'USER_GUID_REQUIRED'));
-        }
-        
-        const userMapping = await UsuarioID.findOne({ where: { usuario_guid }, attributes: ['id_usuario'] });
 
-        if (!userMapping) {  // Verifica que userMapping no sea null
-            return next(notFoundError('Usuario no encontrado', 'USER_NOT_FOUND'));
-        }
-        
-        req.userId = userMapping.id_usuario;
+        await validate.main(getUserSchema, { usuario_guid });
+
+        const userMapping = await findIdByGuid(usuario_guid);
+
+        req.userId = userMapping;
         next();
-    }
-    catch (error) {
-        next(internalServerError('Error al convertir GUID a ID', 'GUID_TO_ID_ERROR'));
+    } catch (error) {
+        logger.error(`Error en guidToId: ${error.message}`);
+        next(error);
+;
     }
 };
 
 module.exports = { guidToId };
-
-

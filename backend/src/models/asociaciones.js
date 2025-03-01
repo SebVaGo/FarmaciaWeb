@@ -1,7 +1,8 @@
 // src/models/asociaciones.js
 const Usuario = require('./Usuario');
 const UsuarioId = require('./UsuarioId');
-const Rol = require('./Rol');  // Asegúrate de que el nombre del archivo sea correcto aquí
+const Rol = require('./Rol'); 
+const CodigoVerificacion = require('./CodigoVerificacion'); 
 
 const setupAssociations = () => {
   // Relación Usuario - Rol
@@ -11,6 +12,10 @@ const setupAssociations = () => {
   // Relación Usuario - UsuarioId
   Usuario.hasMany(UsuarioId, { foreignKey: 'id_usuario' });
   UsuarioId.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
+
+  // Relación Usuario - CodigoVerificacion
+  Usuario.hasMany(CodigoVerificacion, { foreignKey: 'id_usuario' });
+  CodigoVerificacion.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
 };
 
 module.exports = setupAssociations;

@@ -28,10 +28,10 @@ const createUser = async (userData) => {
             throw badRequestError('Los datos del usuario son obligatorios', 'USER_DATA_REQUIRED');
         }
 
-        /*
+        
         const { correo_electronico, numero_documento, password } = userData;
         
-        
+        /*
         if (!correo_electronico || !numero_documento || !password) {
             throw badRequestError('Correo, número de documento y contraseña son obligatorios', 'MISSING_REQUIRED_FIELDS');
         }
