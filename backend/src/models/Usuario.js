@@ -31,6 +31,7 @@ const Usuario = sequelize.define('Usuario', {
     is_logged_in: { type: DataTypes.BOOLEAN, defaultValue: false },
     is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     id_rol: { type: DataTypes.INTEGER, allowNull: true },
+    id_estado: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1},
     fecha_registro: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     fecha_actualizacion: { type: DataTypes.DATE },
     fecha_anulacion: { type: DataTypes.DATE }

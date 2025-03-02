@@ -75,6 +75,33 @@ class UsuarioRepository {
             transaction
         });
     }
+    // Actualiza un usuario existente
+    async update(id, userData, transaction = null) {
+        const result = await Usuario.update(
+            userData,
+            {
+                where: { id },
+                transaction
+            }
+        );
+        
+        return result[0] > 0; // Retorna true si se actualizó al menos un registro
+    }
+
+    // Verifica si existe un usuario con el mismo correo o documento, excluyendo el usuario actual
+    async checkUserExistsExcept({ correo_electronico }, id_usuario, transaction = null) {
+        const whereClause = { id: { [Op.ne]: id_usuario } }; // Excluir el usuario actual
+        
+        if (correo_electronico) {
+            whereClause.correo_electronico = correo_electronico;
+        } else {
+            return null;
+        }      
+        return await Usuario.findOne({
+            where: whereClause,
+            transaction
+        });
+    }     
 }
 
 module.exports = new UsuarioRepository();

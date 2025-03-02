@@ -16,7 +16,15 @@ class UsuarioContrasenaRepository {
             transaction
         });
     }
-    
+
+    async update(id_usuario, clave_hash, transaction = null) {
+        const result = await UsuarioContrasena.update({ clave_hash },
+            { where: { id_usuario }, transaction}
+        );
+        
+        return result[0] > 0;
+    }
+
 }
 
 module.exports = new UsuarioContrasenaRepository();
