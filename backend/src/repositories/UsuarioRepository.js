@@ -5,10 +5,7 @@ const { Op } = require('sequelize');
 
 class UsuarioRepository {
     async findById(id, transaction = null) {
-        return await Usuario.findByPk(id, {
-            attributes: ['id', 'correo_electronico', 'is_verified'],
-            transaction
-        });
+        return await Usuario.findByPk(id, {transaction});
     }
 
     async checkUserExists({ correo_electronico, numero_documento }, transaction = null) {

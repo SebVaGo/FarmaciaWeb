@@ -69,7 +69,8 @@ const updateUser = async (id_usuario, userData) => {
                 throw internalServerError('Error al actualizar el usuario', 'UPDATE_USER_ERROR');
             }
         }
-        
+
+
         // Actualizar contraseña si se incluye
         if (userData.password) {
             await updateUserPassword(id_usuario, userData.password, transaction);
@@ -81,8 +82,9 @@ const updateUser = async (id_usuario, userData) => {
         // Obtener usuario actualizado para la respuesta
         const refreshedUser = await UsuarioRepository.findById(id_usuario);
         
+        console.log('refreshedUser:', refreshedUser);
+
         return {
-            dni: refreshedUser.numero_documento,
             primer_nombre: refreshedUser.primer_nombre,
             apellido_paterno: refreshedUser.apellido_paterno,
             correo: refreshedUser.correo_electronico,
