@@ -1,12 +1,12 @@
 const { findAll, findOne } = require('../../../src/services/typeUser/find.service.js');
-const Role = require('../../../src/models/Rol.js');
+const RolRepository = require('../../../src/repositories/RolRepository.js');
 const logger = require('../../../src/configurations/logger.js');
 const { notFoundError, internalServerError } = require('../../../src/helpers/error.helper.js');
 const CustomError = require('../../../src/helpers/customError.helper.js');
 
-jest.mock('../../../src/models/Rol.js', () => ({
+jest.mock('../../../src/repositories/RolRepository.js', () => ({
     findAll: jest.fn(),
-    findByPk: jest.fn(),
+    findById: jest.fn(),
 }));
 
 jest.mock('../../../src/configurations/logger.js', () => ({
@@ -24,21 +24,20 @@ describe('Servicio find', () => {
         jest.clearAllMocks();
     });
 
-    // 🔹 Pruebas para findAll
     describe('findAll', () => {
         test('✅ Debe retornar todos los roles correctamente', async () => {
             const mockRoles = [{ id: 1, nombre: 'Admin' }, { id: 2, nombre: 'User' }];
-            Role.findAll.mockResolvedValue(mockRoles);
+            RolRepository.findAll.mockResolvedValue(mockRoles);
 
             const result = await findAll();
 
             expect(result).toEqual(mockRoles);
-            expect(Role.findAll).toHaveBeenCalled();
+            expect(RolRepository.findAll).toHaveBeenCalled();
             expect(logger.warn).not.toHaveBeenCalled();
         });
 
         test('❌ Debe lanzar un error si no hay roles', async () => {
-            Role.findAll.mockResolvedValue([]);
+            RolRepository.findAll.mockResolvedValue([]);
             notFoundError.mockReturnValue(new CustomError('No se encontraron roles', 404, 'ROLES_NOT_FOUND'));
 
             await expect(findAll()).rejects.toThrow(CustomError);
@@ -54,7 +53,7 @@ describe('Servicio find', () => {
 
         test('❌ Debe lanzar un error 500 si hay un fallo en la BD', async () => {
             const dbError = new Error('Error en la BD');
-            Role.findAll.mockRejectedValue(dbError);
+            RolRepository.findAll.mockRejectedValue(dbError);
             internalServerError.mockReturnValue(new CustomError('No se pudo obtener los roles', 500, 'FIND_ALL_ROLES_ERROR'));
 
             await expect(findAll()).rejects.toThrow(CustomError);
@@ -69,34 +68,34 @@ describe('Servicio find', () => {
         });
     });
 
-    // 🔹 Pruebas para findOne
     describe('findOne', () => {
         test('✅ Debe retornar un rol si existe', async () => {
             const mockRole = { id: 1, nombre: 'Admin' };
-            Role.findByPk.mockResolvedValue(mockRole);
+            RolRepository.findById.mockResolvedValue(mockRole);
 
             const result = await findOne(1);
 
             expect(result).toEqual(mockRole);
-            expect(Role.findByPk).toHaveBeenCalledWith(1);
+            expect(RolRepository.findById).toHaveBeenCalledWith(1);
             expect(logger.warn).not.toHaveBeenCalled();
         });
 
         test('❌ Debe lanzar un error si el ID no se proporciona', async () => {
-            notFoundError.mockReturnValue(new CustomError('ID de rol no proporcionado', 404));
+            notFoundError.mockReturnValue(new CustomError('ID de rol no proporcionado', 404, 'ROLE_ID_MISSING'));
 
             await expect(findOne(null)).rejects.toThrow(CustomError);
             await expect(findOne(null)).rejects.toMatchObject({
                 message: 'ID de rol no proporcionado',
                 httpStatus: 404,
+                code: 'ROLE_ID_MISSING',
             });
 
             expect(logger.error).not.toHaveBeenCalled();
-            expect(notFoundError).toHaveBeenCalledWith('ID de rol no proporcionado');
+            expect(notFoundError).toHaveBeenCalledWith('ID de rol no proporcionado', 'ROLE_ID_MISSING');
         });
 
         test('❌ Debe lanzar un error si el rol no existe', async () => {
-            Role.findByPk.mockResolvedValue(null);
+            RolRepository.findById.mockResolvedValue(null);
             notFoundError.mockReturnValue(new CustomError('Rol con id 99 no encontrado', 404, 'ROLE_NOT_FOUND'));
 
             await expect(findOne(99)).rejects.toThrow(CustomError);
@@ -112,7 +111,7 @@ describe('Servicio find', () => {
 
         test('❌ Debe lanzar un error 500 si hay un fallo en la BD', async () => {
             const dbError = new Error('Error en la BD');
-            Role.findByPk.mockRejectedValue(dbError);
+            RolRepository.findById.mockRejectedValue(dbError);
             internalServerError.mockReturnValue(new CustomError('No se pudo obtener el rol', 500, 'FIND_ONE_ROLE_ERROR'));
 
             await expect(findOne(1)).rejects.toThrow(CustomError);
