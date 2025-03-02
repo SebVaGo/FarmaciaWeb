@@ -1,54 +1,28 @@
-const Usuario = require('../../models/Usuario');
-const CodigoVerificacion = require('../../models/CodigoVerificacion');
-const { Op } = require('sequelize');
+const UsuarioRepository = require('../../repositories/UsuarioRepository');
+const CodigoVerificacionRepository = require('../../repositories/CodigoVerificacionRepository');
 const { sequelize } = require('../../db/index.js');
+const { notFoundError, internalServerError } = require('../../helpers/error.helper');
+const CustomError = require('../../helpers/customError.helper');
 
 const confirmAccount = async (id_usuario, codigo) => {
+
     const transaction = await sequelize.transaction();
 
     try {
-        console.log(`🔍 Buscando código de verificación para usuario ID: ${id_usuario} con código: ${codigo}`);
-
-        const verificationCode = await CodigoVerificacion.findOne({
-            where: {
-                id_usuario,
-                codigo,
-                expiracion: { [Op.gt]: new Date() },
-                usado: false
-            },
-            transaction
-        });
-
+        const verificationCode = await CodigoVerificacionRepository.findValidCode(id_usuario, codigo, transaction);
         if (!verificationCode) {
-            console.error('❌ Código de verificación inválido o expirado');
-            throw new Error('Código inválido o expirado');
+            throw notFoundError('Código inválido o expirado', 'INVALID_CODE');
         }
 
-        console.log('✅ Código de verificación válido, procediendo a verificar usuario.');
+        await UsuarioRepository.updateVerificationStatus(id_usuario, true, transaction);
 
-        // Actualizar el estado de verificación del usuario
-        const updateUser = await Usuario.update(
-            { is_verified: true },
-            { where: { id: id_usuario }, transaction }
-        );
-
-        console.log(`✅ Usuario con ID: ${id_usuario} ha sido verificado. Filas afectadas: ${updateUser}`);
-
-        // Marcar código como usado en lugar de eliminarlo
-        const updateCode = await CodigoVerificacion.update(
-            { usado: true },
-            { where: { id_usuario, codigo }, transaction }
-        );
-
-        console.log(`✅ Código de verificación marcado como usado. Filas afectadas: ${updateCode}`);
+        await CodigoVerificacionRepository.markCodeAsUsed(id_usuario, codigo, transaction);
 
         await transaction.commit();
         return { message: 'Cuenta verificada exitosamente' };
-
     } catch (error) {
         await transaction.rollback();
-        console.error('❌ Error al confirmar la cuenta:', error.message);
-        throw error;
+        throw error instanceof CustomError ? error : internalServerError('Error al confirmar la cuenta', 'CONFIRM_ACCOUNT_ERROR');
     }
 };
 

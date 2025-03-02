@@ -1,18 +1,16 @@
-const UsuarioId = require('../../models/UsuarioId.js');
+const UsuarioGuidRepository = require('../../repositories/UsuarioIdRepository');
 const logger = require('../../configurations/logger.js');
 const { notFoundError , internalServerError } = require('../../helpers/error.helper');
 const CustomError = require('../../helpers/customError.helper');
 
 const findIdByGuid = async (usuario_guid) => {
     try {
-        const userMapping = await UsuarioId.findOne({
-            where: { usuario_guid },
-            attributes: ['id_usuario']
-        });
-
+        const userMapping = await UsuarioGuidRepository.findByGuid(usuario_guid);
+        
         if (!userMapping) {
             throw notFoundError('Guid no encontrado', 'GUID_NOT_FOUND');
         }
+        
         return userMapping.id_usuario;
     } catch (error) {
         if (!(error instanceof CustomError)) {

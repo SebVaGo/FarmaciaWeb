@@ -1,60 +1,46 @@
-const CodigoVerificacion = require('../../models/CodigoVerificacion');
-const Usuario = require('../../models/Usuario');
-const { generateVerificationCode } = require('../../helpers/generateCode.helper');
+const CodigoVerificacionRepository = require('../../repositories/CodigoVerificacionRepository');
+const UsuarioRepository = require('../../repositories/UsuarioRepository');
 
-const { notFoundError, internalServerError } = require('../../helpers/error.helper');
+const { generateVerificationCode } = require('../../helpers/generateCode.helper');
+const { notFoundError, internalServerError, forbiddenError } = require('../../helpers/error.helper');
 const CustomError = require('../../helpers/customError.helper');
 
+const {sequelize} = require('../../db/index.js');
+
 const generateCode = async (id) => {
+    const transaction = await sequelize.transaction();
+
     try {
-        console.log(`🔍 Buscando usuario con ID: ${id}`);
-
-        // Buscar usuario en la BD
-        const usuario = await Usuario.findByPk(id, {
-            attributes: ['id', 'correo_electronico']
-        });
-
+        const usuario = await UsuarioRepository.findById(id, transaction);
         if (!usuario) {
-            console.error('❌ Usuario no encontrado');
-            throw new CustomError(notFoundError('Usuario no encontrado'));
+            throw notFoundError('Usuario no encontrado', 'USER_NOT_FOUND');
         }
 
-        console.log(`✅ Usuario encontrado: ${JSON.stringify(usuario)}`);
+        if (usuario.is_verified) {
+            throw forbiddenError('La cuenta ya está verificada, no se puede generar un código.', 'ACCOUNT_ALREADY_VERIFIED');
+        }
 
-        // Generar código de verificación
         const codigo = generateVerificationCode();
-        console.log(`🔢 Código generado: ${codigo}`);
-
-        // Establecer tiempo de expiración (ejemplo: 5 min)
         const expiracion = new Date();
         expiracion.setMinutes(expiracion.getMinutes() + 5);
-        console.log(`⏳ Código expirará en: ${expiracion}`);
 
-        // Eliminar códigos previos del usuario
-        console.log('🗑️ Eliminando códigos anteriores...');
-        await CodigoVerificacion.destroy({
-            where: { id_usuario: usuario.id }  // ✅ Corregido
-        });
-        console.log('✅ Códigos previos eliminados.');
+        await CodigoVerificacionRepository.deleteByUserId(usuario.id, transaction);
 
-        // Guardar nuevo código en la BD
-        console.log('💾 Guardando nuevo código de verificación...');
-        await CodigoVerificacion.create({
-            id_usuario: usuario.id,  // ✅ Corregido
+        await CodigoVerificacionRepository.create({
+            id_usuario: usuario.id,
             codigo,
             expiracion,
             usado: false
-        });
-        console.log('✅ Código guardado correctamente.');
+        }, transaction);
+
+        await transaction.commit();
 
         return [codigo, usuario.correo_electronico];
 
     } catch (error) {
-        console.error('❌ Error en generateCode:', error);
-        if (!(error instanceof CustomError)) {
-            throw new CustomError(internalServerError());
-        }
-        throw error;
+        await transaction.rollback();
+        throw error instanceof CustomError ? error : new internalServerError('Error al generar el código de verificación', 'GENERATE_CODE_ERROR');
+
     }
 };
 

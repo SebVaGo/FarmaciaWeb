@@ -4,11 +4,18 @@ const CustomError = require('../helpers/customError.helper.js');
 const { conflictError, internalServerError } = require('../helpers/error.helper.js');
 
 const verifyDni = async (numero_documento) => {
-    try{
-        const usuario = await Usuario.findByPk( numero_documento );
+    try {
+        const usuario = await Usuario.findOne({
+            where: {
+                numero_documento: numero_documento
+            }
+        });
+        
+        console.log('Usuario encontrado por DNI:', usuario);
+        
         return !!usuario;
     }
-    catch(error){
+    catch(error) {
         if (!(error instanceof CustomError)) {
             logger.error(`Error en verifyDni: ${error.message}`);
             throw internalServerError('Error al verificar el DNI', 'DNI_VERIFICATION_ERROR');

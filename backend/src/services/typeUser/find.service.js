@@ -1,12 +1,12 @@
-const Role = require('../../models/Rol.js');
+const RolRepository = require('../../repositories/RolRepository');
 const logger = require('../../configurations/logger.js');
 const { notFoundError, internalServerError } = require('../../helpers/error.helper.js'); 
 const CustomError = require('../../helpers/customError.helper.js'); 
 
 const findAll = async () => {
-    try{
-        const roles = await Role.findAll();
-
+    try {
+        const roles = await RolRepository.findAll();
+        
         if (!roles || roles.length === 0) {
             logger.warn('No se encontraron roles');
             throw notFoundError('No se encontraron roles', 'ROLES_NOT_FOUND');
@@ -25,9 +25,11 @@ const findAll = async () => {
 const findOne = async (id) => {
     try {
         if (!id) {
-            throw notFoundError('ID de rol no proporcionado');
+            throw notFoundError('ID de rol no proporcionado', 'ROLE_ID_MISSING');
         }
-        const role = await Role.findByPk(id);
+        
+        const role = await RolRepository.findById(id);
+        
         if (!role) {
             logger.warn(`Rol con id ${id} no encontrado`);
             throw notFoundError(`Rol con id ${id} no encontrado`, 'ROLE_NOT_FOUND');

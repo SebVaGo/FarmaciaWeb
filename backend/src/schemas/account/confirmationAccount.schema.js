@@ -7,9 +7,15 @@ const confirmationAccountSchema = joi.object({
         'string.guid': 'El usuario guid debe ser un UUID válido.',
         'any.required': 'El usuario guid es obligatorio.'
     }),
-    codigo: joi.string().required().messages({
+    codigo: joi.string()
+    .length(6)
+    .pattern(/^\d{6}$/)
+    .required()
+    .messages({
         'string.empty': 'El código de verificación es obligatorio.',
-        'any.required': 'El código de verificación es obligatorio.'
+        'any.required': 'El código de verificación es obligatorio.',
+        'string.length': 'El código de verificación debe tener exactamente 6 dígitos.',
+        'string.pattern.base': 'El código de verificación solo puede contener números.'
     })
 });
 

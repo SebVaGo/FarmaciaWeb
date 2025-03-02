@@ -1,10 +1,11 @@
-const Joi = require('joi');
+const joi = require('joi');
 
-const getUserSchema = Joi.object({
-    usuario_guid: Joi.string().uuid().required().messages({
-        'string.empty': 'El GUID de usuario es obligatorio.',
-        'string.uuid': 'El GUID de usuario debe ser un UUID válido.',
-        'any.required': 'El GUID de usuario es obligatorio.'
+const getUserSchema = joi.object({
+    usuario_guid: joi.string().uuid().required().messages({
+        'string.base': 'El usuario guid debe ser un string.',
+        'string.empty': 'El usuario guid es obligatorio.',
+        'string.guid': 'El usuario guid debe ser un UUID válido.',
+        'any.required': 'El usuario guid es obligatorio.'
     })
 });
 
