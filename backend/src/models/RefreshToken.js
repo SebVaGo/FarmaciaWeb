@@ -13,8 +13,6 @@ const RefreshToken = sequelize.define('RefreshToken', {
     expires_at: { type: DataTypes.DATE, allowNull: false }
 }, { tableName: 'refresh_tokens', timestamps: false });
 
-// Relaciones
-RefreshToken.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
-RefreshToken.belongsTo(UserSession, { foreignKey: 'id_session', onDelete: 'CASCADE' });
+
 
 module.exports = RefreshToken;

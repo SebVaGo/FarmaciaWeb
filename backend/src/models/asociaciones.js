@@ -5,6 +5,8 @@ const UsuarioContrasena = require('./UsuarioContrasena');
 const Rol = require('./Rol'); 
 const CodigoVerificacion = require('./CodigoVerificacion'); 
 const EstadoUsuario = require('./EstadoUsuario');
+const RefreshToken = require('./RefreshToken');
+const UserSession = require('./UserSession');
 
 
 const setupAssociations = () => {
@@ -20,9 +22,21 @@ const setupAssociations = () => {
   Usuario.hasMany(CodigoVerificacion, { foreignKey: 'id_usuario' });
   CodigoVerificacion.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
 
+  //Relación Usuario - UserSession
+  UserSession.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
+  Usuario.hasMany(UserSession, { foreignKey: 'id_usuario' });
+
   //Relación Usuario - EstadoUsuario
   Usuario.belongsTo(EstadoUsuario, { foreignKey: 'id_estado', as : 'estado' });
   EstadoUsuario.hasMany(Usuario, { foreignKey: 'id_estado' }); 
+
+  //Relación Usuario - RefreshToken
+  Usuario.hasMany(RefreshToken, { foreignKey: 'id_usuario' });
+  RefreshToken.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
+
+  //Relación UserSession - RefreshToken
+  UserSession.hasMany(RefreshToken, { foreignKey: 'id_session' });
+  RefreshToken.belongsTo(UserSession, { foreignKey: 'id_session', onDelete: 'CASCADE' });
 
 };
 

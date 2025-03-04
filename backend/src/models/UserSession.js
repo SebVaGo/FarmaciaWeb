@@ -14,7 +14,5 @@ const UserSession = sequelize.define('UserSession', {
     expires_at: { type: DataTypes.DATE, allowNull: false }
 }, { tableName: 'user_sessions', timestamps: false });
 
-// Relaciones
-UserSession.belongsTo(Usuario, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
 
 module.exports = UserSession;

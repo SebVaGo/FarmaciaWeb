@@ -1,11 +1,34 @@
 const Usuario = require('../models/Usuario');
 const UsuarioId = require('../models/UsuarioId');
 const Rol = require('../models/Rol');
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
+const { sequelize } = require('../db/index.js');
 
 class UsuarioRepository {
     async findById(id, transaction = null) {
         return await Usuario.findByPk(id, {transaction});
+    }
+
+    async getUserWithDetails(correo, transaction = null) {
+        return await sequelize.query(
+            `SELECT 
+                u.correo_electronico,
+                u.id,
+                u.is_verified,
+                u.primer_nombre,
+                u.is_logged_in,
+                c.clave_hash,
+                e.nombre AS estado_usuario
+            FROM usuario u
+            JOIN estado_usuario e ON u.id_estado = e.id
+            JOIN usuariocontrasena c ON u.id = c.id_usuario
+            WHERE u.correo_electronico = :correo`,
+            {
+                replacements: { correo },
+                type: QueryTypes.SELECT,
+                transaction
+            }
+        );
     }
 
     async checkUserExists({ correo_electronico, numero_documento }, transaction = null) {
@@ -98,7 +121,9 @@ class UsuarioRepository {
             where: whereClause,
             transaction
         });
-    }     
+    }
+    
+
 }
 
 module.exports = new UsuarioRepository();
