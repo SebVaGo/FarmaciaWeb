@@ -16,7 +16,6 @@ class UsuarioRepository {
                 u.id,
                 u.is_verified,
                 u.primer_nombre,
-                u.is_logged_in,
                 c.clave_hash,
                 e.nombre AS estado_usuario
             FROM usuario u

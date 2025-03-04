@@ -6,10 +6,12 @@ const { generateRefreshToken } = require('../../helpers/token.helper');
 const refreshTokenCreate = async (userId, sessionId) => {
 
     try {
-        const existingToken = await RefreshTokenRepository.findByUser(userId);
 
-        if (existingToken) {
-            await RefreshTokenRepository.deleteByUser(userId);
+        const existingTokens = await RefreshTokenRepository.findAllByUser(userId);
+
+        // Si existen tokens, los revocas
+        if (existingTokens && existingTokens.length > 0) {
+            await RefreshTokenRepository.revokeTokenByUser(userId);
         }
 
         const refreshToken = generateRefreshToken({ id: userId });
@@ -60,4 +62,17 @@ const revokeRefreshToken = async (refreshToken) => {
     }
 }
 
-module.exports = { refreshTokenCreate, validateRefreshToken, revokeRefreshToken };
+const revokeRefreshTokenByUser = async (userId) => { 
+    try {
+        const rowsAffected = await RefreshTokenRepository.revokeTokenByUser(userId); 
+        if (rowsAffected[0] === 0) { 
+            throw internalServerError('Token de refresco no encontrado', 'REFRESH_TOKEN_NOT_FOUND'); 
+        }
+        return rowsAffected;
+    } catch(error) { 
+        throw error instanceof CustomError ? error : internalServerError('Error al revocar el token de refresco', 'REVOKE_REFRESH_TOKEN_ERROR'); 
+    } 
+}
+
+
+module.exports = { refreshTokenCreate, validateRefreshToken, revokeRefreshToken, revokeRefreshTokenByUser };

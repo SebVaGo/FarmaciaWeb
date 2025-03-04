@@ -22,8 +22,24 @@ class RefreshTokenRepository {
         return await RefreshToken.update({ is_revoked: true }, { where: { id: tokenId } });
     }
 
+    async revokeTokenByUser(userId) {
+        return await RefreshToken.update({ is_revoked: true }, { where: { id_usuario: userId } });
+    }
+
     async deleteExpiredTokens() {
-        return await RefreshToken.destroy({ where: { expires_at: { [Op.lt]: new Date() } } });
+        return await RefreshToken.update(
+            { is_revoked: true }, 
+            { where: { expires_at: { [Op.lt]: new Date() } } }
+        );
+    }
+    
+    async findAllByUser(userId) {
+        return await RefreshToken.findAll({ 
+            where: { 
+                id_usuario: userId,
+                is_revoked: false 
+            } 
+        });
     }
 }
 

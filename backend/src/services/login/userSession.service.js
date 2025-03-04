@@ -1,12 +1,12 @@
 const UserSessionRepository = require('../../repositories/UserSessionRepository');
 const { generateAccessToken } = require('../../helpers/token.helper');
 
-const createSession = async (userId, location, ip , device) => {
+const createSession = async (userId, location, ip, device) => {
 
-    const existingSession = await UserSessionRepository.findActiveByUser(userId);
+    const activeSessions = await UserSessionRepository.findActiveSessionsByUser(userId);
 
-    if (existingSession) {
-        closeSession(existingSession.id);
+    if (activeSessions && activeSessions.length > 0) {
+        await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive');
     }
 
     const accessToken = generateAccessToken(userId);
@@ -26,6 +26,7 @@ const createSession = async (userId, location, ip , device) => {
     return sessionCreated.id;
 }
 
+
 const closeSession = async (sessionId) => {
     try{
         const [rowsAffected] = await UserSessionRepository.updateSessionStatus(sessionId, 'inactive');
@@ -40,4 +41,16 @@ const closeSession = async (sessionId) => {
     }
 }
 
-module.exports = { createSession, closeSession };
+const closeSessionByUsuario = async (userId) => { 
+    try {
+        const rowsAffected = await UserSessionRepository.updateSessionStatusByUser(userId, 'inactive'); 
+        if(rowsAffected[0] === 0){ 
+            throw internalServerError('Usuario no tiene sesiones activas', 'USER_SESSIONS_NOT_FOUND'); 
+        }
+        return rowsAffected;
+    } catch(error) { 
+        throw error instanceof CustomError ? error : internalServerError('Error al cerrar la sesión', 'CLOSE_SESSION_ERROR'); 
+    } 
+}
+
+module.exports = { createSession, closeSession, closeSessionByUsuario };

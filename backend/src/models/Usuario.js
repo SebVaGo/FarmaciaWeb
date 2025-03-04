@@ -28,7 +28,6 @@ const Usuario = sequelize.define('Usuario', {
 
         return dateObject.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     }   },
-    is_logged_in: { type: DataTypes.BOOLEAN, defaultValue: false },
     is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
     id_rol: { type: DataTypes.INTEGER, allowNull: true },
     id_estado: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1},
