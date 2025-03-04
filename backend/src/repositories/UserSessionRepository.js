@@ -2,8 +2,8 @@ const UserSession = require('../models/UserSession');
 const { sequelize } = require('../db/index.js');
 
 class UserSessionRepository {
-    async create(sessionData) {
-        return await UserSession.create(sessionData);
+    async create(sessionData, transaction = null) {
+        return await UserSession.create(sessionData, { transaction });
     }
 
     async findByUser(userId) {
@@ -27,14 +27,12 @@ class UserSessionRepository {
         });
     }
 
-    async updateAllUserActiveSessions(userId, status) {
+    async updateAllUserActiveSessions(userId, status, transaction = null) {
         return await UserSession.update(
             { status }, 
             { 
-                where: { 
-                    id_usuario: userId, 
-                    status: 'active' 
-                } 
+                where: { id_usuario: userId, status: 'active' },
+                transaction
             }
         );
     }

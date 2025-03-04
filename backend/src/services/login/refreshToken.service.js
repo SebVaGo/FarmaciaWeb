@@ -4,28 +4,20 @@ const { internalServerError } = require('../../helpers/error.helper');
 const { generateRefreshToken } = require('../../helpers/token.helper');
 
 const refreshTokenCreate = async (userId, sessionId) => {
-
     try {
-
-        const existingTokens = await RefreshTokenRepository.findAllByUser(userId);
-
-        // Si existen tokens, los revocas
-        if (existingTokens && existingTokens.length > 0) {
-            await RefreshTokenRepository.revokeTokenByUser(userId);
-        }
+        // Revocar tokens anteriores
+        await RefreshTokenRepository.revokeTokenByUser(userId);
 
         const refreshToken = generateRefreshToken({ id: userId });
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 7); // Expira en 7 días
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 días
 
-        const refreshTokenData = await RefreshTokenRepository.create({
+        return await RefreshTokenRepository.create({
             id_usuario: userId,
             refresh_token: refreshToken,
-            id_session: sessionId,  // Asegúrate de que sessionId no sea null
-            expires_at: expiresAt   // Agrega la fecha de expiración
+            id_session: sessionId,
+            expires_at: expiresAt
         });
 
-        return refreshTokenData;
     } catch (error) {
         throw error instanceof CustomError ? error : internalServerError('Error al crear el token de refresco', 'CREATE_REFRESH_TOKEN_ERROR');
     }

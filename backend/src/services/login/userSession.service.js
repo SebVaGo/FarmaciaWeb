@@ -1,16 +1,12 @@
 const UserSessionRepository = require('../../repositories/UserSessionRepository');
 const { generateAccessToken } = require('../../helpers/token.helper');
 
-const createSession = async (userId, location, ip, device) => {
-
-    const activeSessions = await UserSessionRepository.findActiveSessionsByUser(userId);
-
-    if (activeSessions && activeSessions.length > 0) {
-        await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive');
-    }
+const createSession = async (userId, location, ip, device, transaction) => {
+    // Invalidar sesiones previas en la misma transacción
+    await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive', transaction);
 
     const accessToken = generateAccessToken(userId);
-    
+
     const sessionData = {
         id_usuario: userId,
         ip_address: ip,
@@ -21,10 +17,10 @@ const createSession = async (userId, location, ip, device) => {
         expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
     };
 
-    const sessionCreated = await UserSessionRepository.create(sessionData);
-    
+    const sessionCreated = await UserSessionRepository.create(sessionData, transaction);
+
     return sessionCreated.id;
-}
+};
 
 
 const closeSession = async (sessionId) => {
