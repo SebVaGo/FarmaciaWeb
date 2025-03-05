@@ -1,11 +1,11 @@
 const UserSessionRepository = require('../../repositories/UserSessionRepository');
 const { generateAccessToken } = require('../../helpers/token.helper');
 
-const createSession = async (userId, location, ip, device, transaction) => {
+const createSession = async (userGuid ,userId, location, ip, device, transaction) => {
     // Invalidar sesiones previas en la misma transacción
     await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive', transaction);
 
-    const accessToken = generateAccessToken(userId);
+    const accessToken = generateAccessToken(userGuid);
 
     const sessionData = {
         id_usuario: userId,
@@ -19,7 +19,8 @@ const createSession = async (userId, location, ip, device, transaction) => {
 
     const sessionCreated = await UserSessionRepository.create(sessionData, transaction);
 
-    return sessionCreated.id;
+    return { session: sessionCreated.id, accessToken }; // 🔹 Devolver el accessToken junto con la sesión
+
 };
 
 

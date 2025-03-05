@@ -12,6 +12,7 @@ class UsuarioRepository {
     async getUserWithDetails(correo, transaction = null) {
         return await sequelize.query(
             `SELECT 
+                uid.usuario_guid,
                 u.correo_electronico,
                 u.id,
                 u.is_verified,
@@ -21,6 +22,7 @@ class UsuarioRepository {
             FROM usuario u
             JOIN estado_usuario e ON u.id_estado = e.id
             JOIN usuariocontrasena c ON u.id = c.id_usuario
+            JOIN usuarioid uid ON u.id = uid.id_usuario
             WHERE u.correo_electronico = :correo`,
             {
                 replacements: { correo },

@@ -2,14 +2,25 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '../../.env' });
 const jwt = require('jsonwebtoken');
 
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict',
+    maxAge: 15 * 60 * 1000 // 15 minutos
+};
 
-const generateAccessToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+const generateAccessToken = (userGuid) => {
+    return jwt.sign({ id: userGuid }, process.env.JWT_SECRET, { expiresIn: '15m' });
 }
 
-const generateRefreshToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
+const generateRefreshToken = (userGuid) => {
+    return jwt.sign({ id: userGuid }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 }
+
+const setAuthCookie = (res, accessToken) => {
+    res.cookie('accessToken', accessToken, COOKIE_OPTIONS);
+} 
 
 const verifyToken = (token, secret) => {
     try {
@@ -20,4 +31,4 @@ const verifyToken = (token, secret) => {
 }
 
 
-module.exports = { generateAccessToken, generateRefreshToken, verifyToken };
+module.exports = { generateAccessToken, generateRefreshToken, verifyToken, setAuthCookie };
