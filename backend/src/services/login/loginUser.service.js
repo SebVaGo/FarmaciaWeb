@@ -83,7 +83,7 @@ const LoginUser = async (email, password, res) => {
         
         setAuthCookie(res, access_token);
 
-        return { access_token, refresh_token: createdRefreshToken.refresh_token }; 
+        return { message: 'Usuario autenticado correctamente' }; 
 
     } catch (error) {
         logger.error(`Error en la autenticación: ${error.message}`, { 
@@ -101,6 +101,5 @@ const LoginUser = async (email, password, res) => {
           );
         }
       };
-
 
 module.exports = { preLoginUser, LoginUser };
