@@ -1,26 +1,28 @@
 const UserSessionRepository = require('../../repositories/UserSessionRepository');
 const { generateAccessToken } = require('../../helpers/token.helper');
+const logger = require('../../configurations/logger.js');
 
-const createSession = async (userGuid ,userId, location, ip, device, transaction) => {
-    // Invalidar sesiones previas en la misma transacción
-    await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive', transaction);
+const createSession = async (userGuid ,userId, transaction) => {
 
-    const accessToken = generateAccessToken(userGuid);
+    try {
+        await UserSessionRepository.updateAllUserActiveSessions(userId, 'inactive', transaction);
+        const accessToken = generateAccessToken(userGuid);
 
-    const sessionData = {
-        id_usuario: userId,
-        ip_address: ip,
-        location: location,
-        device_info: device,
-        status: 'active',
-        access_token: accessToken,
-        expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
-    };
+        const sessionData = {
+            id_usuario: userId,
+            status: 'active',
+            access_token: accessToken,
+            expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutos
+        };
 
-    const sessionCreated = await UserSessionRepository.create(sessionData, transaction);
+        const sessionCreated = await UserSessionRepository.create(sessionData, transaction);
 
-    return { session: sessionCreated.id, accessToken }; // 🔹 Devolver el accessToken junto con la sesión
+        return { session: sessionCreated.id, accessToken };
 
+    } catch (error) {
+        logger.error(`Error en createSession para usuario ${userId}: ${error.message}`, { error });
+        throw error;
+    }
 };
 
 

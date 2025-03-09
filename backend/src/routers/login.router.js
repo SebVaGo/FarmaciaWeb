@@ -1,5 +1,5 @@
 const express = require('express');
-const { extractUserInfo } = require('../middlewares/ipInformation.middleware.js');
+const { getIpInformation } = require('../middlewares/ipInformation.middleware.js');
 
 const {
     loginUserHandler
@@ -7,6 +7,6 @@ const {
 
 const loginRouter = express.Router();
 
-loginRouter.post('/user', loginUserHandler);
+loginRouter.post('/user', getIpInformation, loginUserHandler);
 
 module.exports = loginRouter;

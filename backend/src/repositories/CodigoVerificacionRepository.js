@@ -29,6 +29,21 @@ class CodigoVerificacionRepository {
             { where: { id_usuario: userId, codigo: code }, transaction }
         );
     }
+
+    async markCodeAsUsedByTypeAndId(userId, type, transaction = null) {
+        return await CodigoVerificacion.update(
+            { usado: true },
+            { where: { id_usuario: userId, id_tipo: type }, transaction }
+        );
+    }
+
+    async updateStatusCodeByTypeAndId(userId, type, status, transaction = null) {
+        return await CodigoVerificacion.update(
+            { status },
+            { where: { id_usuario: userId, id_tipo: type }, transaction }
+        );
+    }
+
 }
 
 module.exports = new CodigoVerificacionRepository();

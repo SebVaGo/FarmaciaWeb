@@ -7,6 +7,7 @@ const CodigoVerificacion = require('./CodigoVerificacion');
 const EstadoUsuario = require('./EstadoUsuario');
 const RefreshToken = require('./RefreshToken');
 const UserSession = require('./UserSession');
+const TipoCodigoVerificacion = require('./TipoCodigoVerificacion');
 
 
 const setupAssociations = () => {
@@ -37,6 +38,10 @@ const setupAssociations = () => {
   //Relación UserSession - RefreshToken
   UserSession.hasMany(RefreshToken, { foreignKey: 'id_session' });
   RefreshToken.belongsTo(UserSession, { foreignKey: 'id_session', onDelete: 'CASCADE' });
+
+  //Relación CodigoVerificacion - TipoCodigoVerificacion
+  CodigoVerificacion.belongsTo(TipoCodigoVerificacion, { foreignKey: 'id_tipo' });
+  TipoCodigoVerificacion.hasMany(CodigoVerificacion, { foreignKey: 'id_tipo' });
 
 };
 

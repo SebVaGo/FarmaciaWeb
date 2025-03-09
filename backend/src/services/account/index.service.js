@@ -4,7 +4,7 @@ const { confirmAccount } = require('./confirmationAccount.service');
 
 
 module.exports = {
-    sendCodeEmailVerification: sendCode,
+    sendCodeVerification: sendCode,
     generateCodeEmailVerification: generateCode,
     confirmCodeVerification: confirmAccount
 };

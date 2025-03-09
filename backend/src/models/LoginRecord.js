@@ -4,13 +4,14 @@ const User = require('./Usuario');
 
 const LoginRecord = sequelize.define('LoginRecord', {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  user_id: { type: DataTypes.INTEGER, allowNull: false },
-  ip_address: { type: DataTypes.STRING(45), allowNull: false },
+  id_usuario: { type: DataTypes.INTEGER, allowNull: false },
+  ip: { type: DataTypes.STRING(45), allowNull: false },
   location: { type: DataTypes.STRING(255) },
-  device_info: { type: DataTypes.STRING(255) },
+  device: { type: DataTypes.STRING(255) },
   status: { type: DataTypes.ENUM('success', 'failure'), allowNull: false },
 }, {
-  timestamps: true, // createdAt manejará attempted_at
+  tableName: 'login_record', 
+  timestamps: false, // createdAt manejará attempted_at
 });
 
 // Relación con User

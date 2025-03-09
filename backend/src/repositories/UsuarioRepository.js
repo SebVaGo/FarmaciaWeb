@@ -9,6 +9,14 @@ class UsuarioRepository {
         return await Usuario.findByPk(id, {transaction});
     }
 
+    async findByEmail(correo_electronico, transaction = null) {
+        return await Usuario.findOne({
+            where: { correo_electronico },
+            transaction
+        });
+    }
+    
+
     async getUserWithDetails(correo, transaction = null) {
         return await sequelize.query(
             `SELECT 
@@ -31,6 +39,28 @@ class UsuarioRepository {
             }
         );
     }
+
+    async getSessionDetails(email, transaction = null) {
+        const [result] = await sequelize.query(
+            `
+            SELECT 
+                u.id AS user_id,
+                u.correo_electronico,
+                us.status AS session_status
+            FROM usuario u
+            LEFT JOIN user_sessions us ON u.id = us.id_usuario AND us.status = 'active'
+            WHERE u.correo_electronico = :email
+            LIMIT 1;
+            `,
+            {
+                replacements: { email },
+                type: QueryTypes.SELECT,
+                transaction
+            }
+        );
+        return result;
+    }
+
 
     async checkUserExists({ correo_electronico, numero_documento }, transaction = null) {
         return await Usuario.findOne({

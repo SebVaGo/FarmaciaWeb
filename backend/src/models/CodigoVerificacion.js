@@ -28,6 +28,10 @@ const CodigoVerificacion = sequelize.define('CodigoVerificacion', {
   usado: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  id_tipo: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   }
 }, {
   tableName: 'CodigoVerificacion',

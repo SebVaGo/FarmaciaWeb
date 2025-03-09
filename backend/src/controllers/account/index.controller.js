@@ -1,7 +1,10 @@
-const { sendCode } = require('./sendCode.controller.js');
-const { confirmCode } = require('./confirmationAccount.controller.js');
+const { sendCodeAccountConfirmation, sendCodeDeviceConfirmation } = require('./sendCode.controller.js');
+const { confirmDeviceCode, confirmAccountCode, confirmCode } = require('./confirmationAccount.controller.js');
 
 module.exports = {
-    sendCodeEmailVerification: sendCode,
+    confirmDeviceCode,
+    confirmAccountCode,
+    sendCodeAccountConfirmation,
+    sendCodeDeviceConfirmation,
     confirmCodeVerification : confirmCode,
 };
